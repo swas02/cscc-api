@@ -31,6 +31,9 @@
             <a class="nav-link text-white" href="#integration"><i class="bi bi-code-square me-1"></i>Quickstart</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link text-white" href="#api-reference"><i class="bi bi-book me-1"></i>API Reference</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link text-white" href="#endpoints"><i class="bi bi-hdd-network me-1"></i>Endpoints</a>
           </li>
           <li class="nav-item">
@@ -279,12 +282,12 @@
           <ul class="nav nav-pills mb-4" id="integrationTabs" role="tablist">
             <li class="nav-item" role="presentation">
               <button class="nav-link active" id="browser-tab" data-bs-toggle="pill" data-bs-target="#browser-pane" type="button" role="tab">
-                <i class="bi bi-window me-1"></i>Browser (<code class="text-light">&lt;script&gt;</code>)
+                <i class="bi bi-window me-1"></i>Browser
               </button>
             </li>
             <li class="nav-item" role="presentation">
               <button class="nav-link" id="node-tab" data-bs-toggle="pill" data-bs-target="#node-pane" type="button" role="tab">
-                <i class="bi bi-terminal me-1"></i>Node.js & Bun (<code class="text-light">cscc-local</code>)
+                <i class="bi bi-terminal me-1"></i>Node.js & Bun
               </button>
             </li>
           </ul>
@@ -292,24 +295,47 @@
           <div class="tab-content" id="integrationTabsContent">
             <!-- Browser Tab -->
             <div class="tab-pane fade show active" id="browser-pane" role="tabpanel">
-              <p class="text-muted mb-3">
-                Include the client library from the static release path. It automatically detects its base URL and requires zero external dependencies:
+              <h6 class="fw-bold text-dark mb-2">1. Include CDN Client Script</h6>
+              <p class="text-muted small mb-2">
+                Add the lightweight client script to your HTML page (zero external dependencies):
+              </p>
+              <div class="position-relative bg-dark rounded-3 p-3 mb-4">
+                <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2" onclick="copySnippet('codeBrowserScript', this)">
+                  <i class="bi bi-clipboard me-1"></i>Copy
+                </button>
+                <pre class="text-light mb-0 font-monospace small"><code id="codeBrowserScript">&lt;script src="https://swas02.github.io/cscc-api/v1/index.js"&gt;&lt;/script&gt;</code></pre>
+              </div>
+
+              <h6 class="fw-bold text-dark mb-2">2. Query Dataset in Browser</h6>
+              <p class="text-muted small mb-2">
+                Query scenarios asynchronously with automatic caching and sub-millisecond in-memory lookups:
               </p>
               <div class="position-relative bg-dark rounded-3 p-3 mb-3">
                 <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2" onclick="copySnippet('codeBrowser', this)">
                   <i class="bi bi-clipboard me-1"></i>Copy
                 </button>
-                <pre class="text-light mb-0 font-monospace small"><code id="codeBrowser">&lt;!-- Load client library from static release path --&gt;
-&lt;script src="https://swas02.github.io/cscc-api/v1/index.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-  DataAPI.ready().then(async () => {
-    // Query scenarios for India
-    const rows = await DataAPI.getData('IND', {
+                <pre class="text-light mb-0 font-monospace small"><code id="codeBrowser">&lt;script&gt;
+  DataAPI.ready().then(async (meta) => {
+    console.log(`CSCC API Ready (${meta.countries} countries loaded)`);
+
+    // 1. Filtered scenario search for India (IND):
+    const scenarios = await DataAPI.getData('IND', {
+      ssp: 2,     // SSP2
+      rcp: 4.5,   // RCP 4.5
+      dr: 3       // 3% constant discount rate
+    });
+    console.log(`Found ${scenarios.length} scenarios:`, scenarios[0]);
+
+    // 2. Exact single-scenario point lookup for USA:
+    const point = await DataAPI.get('USA', {
+      run: 'bhm_sr',
+      dmgfuncpar: 'bootstrap',
+      climate: 'expected',
       ssp: 2,
       rcp: 4.5,
       dr: 3
     });
-    console.log('Returned scenarios:', rows);
+    console.log(`USA Median CSCC: $${point.p50} / tCO2 (Range: $${point.p16_7} - $${point.p83_3})`);
   });
 &lt;/script&gt;</code></pre>
               </div>
@@ -317,33 +343,167 @@
 
             <!-- Node.js Tab -->
             <div class="tab-pane fade" id="node-pane" role="tabpanel">
-              <p class="text-muted mb-3">
-                For Node.js and Bun, use the offline-first standalone <strong><code>cscc-local</code></strong> module:
+              <h6 class="fw-bold text-dark mb-2">1. Install Package</h6>
+              <p class="text-muted small mb-2">
+                Install directly into any Node.js or Bun project without manually cloning:
+              </p>
+              <div class="position-relative bg-dark rounded-3 p-3 mb-4">
+                <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2" onclick="copySnippet('codeInstall', this)">
+                  <i class="bi bi-clipboard me-1"></i>Copy
+                </button>
+                <pre class="text-light mb-0 font-monospace small"><code id="codeInstall">npm install github:swas02/cscc-local#v1.0.0</code></pre>
+              </div>
+
+              <h6 class="fw-bold text-dark mb-2">2. Query Dataset (100% Offline)</h6>
+              <p class="text-muted small mb-2">
+                Execute queries in CommonJS, ES Modules, or Bun with sub-millisecond local speed:
               </p>
               <div class="position-relative bg-dark rounded-3 p-3 mb-3">
                 <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2" onclick="copySnippet('codeNode', this)">
                   <i class="bi bi-clipboard me-1"></i>Copy
                 </button>
-                <pre class="text-light mb-0 font-monospace small"><code id="codeNode">// Clone or install cscc-local
-// git clone https://github.com/swas02/cscc-local.git
-
-const cscc = require('cscc-local'); // or require('.')
+                <pre class="text-light mb-0 font-monospace small"><code id="codeNode">const cscc = require('cscc-local'); // or import cscc from 'cscc-local'
 
 async function main() {
-  // 100% offline, zero network requests
+  // Filter scenarios for India (IND):
   const rows = await cscc.getData('IND', { ssp: 2, rcp: 4.5, dr: 3 });
   console.log('Results:', rows[0]);
 
   // Synchronous point query (zero await):
   const point = cscc.getSync('USA', {
-    run: 'bhm_sr', dmgfuncpar: 'bootstrap', climate: 'expected',
-    ssp: 2, rcp: 4.5, dr: 3
+    run: 'bhm_sr',
+    dmgfuncpar: 'bootstrap',
+    climate: 'expected',
+    ssp: 2,
+    rcp: 4.5,
+    dr: 3
   });
   console.log('USA Median:', point.p50);
 }
 main();</code></pre>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- API Reference / Readme Documentation -->
+    <section id="api-reference" class="mb-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h4 class="card-title fw-bold mb-0 text-dark">
+            <i class="bi bi-journal-code text-primary me-2"></i>API Methods & Schema Reference
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <p class="text-secondary mb-4">
+            Both the browser client (<code>DataAPI</code>) and the Node.js/Bun client (<code>cscc-local</code>) share the same uniform API methods, parameters, and response structures.
+          </p>
+
+          <h5 class="fw-bold text-dark mb-3"><i class="bi bi-lightning-charge-fill text-warning me-1"></i>Client Methods</h5>
+          <div class="table-responsive mb-4">
+            <table class="table table-bordered table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 25%">Method</th>
+                  <th style="width: 22%">Signature</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ready()</code><br><span class="badge bg-light text-dark border">Sync: readySync()</span></td>
+                  <td><code>Promise&lt;Meta&gt;</code></td>
+                  <td>Initializes dataset dictionaries, dimension layouts, and row schema.</td>
+                </tr>
+                <tr>
+                  <td><code>getData(iso3, filter?)</code><br><span class="badge bg-light text-dark border">Sync: getDataSync()</span></td>
+                  <td><code>Promise&lt;Row[]&gt;</code></td>
+                  <td>Returns matching scenario rows for an ISO3 country. Accepts filter object like <code>{ ssp: 2, rcp: 4.5, dr: 3 }</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>get(iso3, key)</code><br><span class="badge bg-light text-dark border">Sync: getSync()</span></td>
+                  <td><code>Promise&lt;Row | null&gt;</code></td>
+                  <td>Performs an exact scenario point query matching all dimensions (instant O(1) in-memory array index).</td>
+                </tr>
+                <tr>
+                  <td><code>countries()</code><br><span class="badge bg-light text-dark border">Sync: countriesSync()</span></td>
+                  <td><code>Promise&lt;string[]&gt;</code></td>
+                  <td>Returns all 170 available ISO3 country codes in alphabetical order.</td>
+                </tr>
+                <tr>
+                  <td><code>options(filter?)</code><br><span class="badge bg-light text-dark border">Sync: optionsSync()</span></td>
+                  <td><code>Promise&lt;Options&gt;</code></td>
+                  <td>Returns dynamically valid dimension values given an active filter.</td>
+                </tr>
+                <tr>
+                  <td><code>prefetch(iso3)</code><br><span class="badge bg-light text-dark border">Sync: prefetchSync()</span></td>
+                  <td><code>Promise&lt;void&gt;</code></td>
+                  <td>Pre-fetches one or multiple countries (e.g. <code>['USA', 'IND']</code>) into memory cache.</td>
+                </tr>
+                <tr>
+                  <td><code>clearCache()</code></td>
+                  <td><code>void</code></td>
+                  <td>Flushes all cached binary buffers from RAM.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h5 class="fw-bold text-dark mb-3"><i class="bi bi-table text-info me-1"></i>Returned Row Schema</h5>
+          <div class="table-responsive mb-0">
+            <table class="table table-bordered table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 20%">Field</th>
+                  <th style="width: 15%">Type</th>
+                  <th>Description / Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>p50</code></td>
+                  <td><code>number</code></td>
+                  <td><strong>Median Social Cost of Carbon</strong> in USD / tCO2 (e.g. <code>$139.41</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>p16_7</code> / <code>p83_3</code></td>
+                  <td><code>number | null</code></td>
+                  <td>16.7th and 83.3th percentile confidence range (66.7% credible interval, e.g. <code>$48.42 - $149.47</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>n</code></td>
+                  <td><code>number</code></td>
+                  <td>Monte Carlo simulation sample size (e.g. <code>1000</code> runs)</td>
+                </tr>
+                <tr>
+                  <td><code>ssp</code></td>
+                  <td><code>string</code></td>
+                  <td>Shared Socioeconomic Pathway (<code>SSP1</code> through <code>SSP5</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>rcp</code></td>
+                  <td><code>string</code></td>
+                  <td>Representative Concentration Pathway (<code>rcp45</code>, <code>rcp60</code>, <code>rcp85</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>dr</code></td>
+                  <td><code>number | null</code></td>
+                  <td>Constant discount rate (e.g. <code>3</code> or <code>5</code> percent)</td>
+                </tr>
+                <tr>
+                  <td><code>prtp</code> / <code>eta</code></td>
+                  <td><code>number | null</code></td>
+                  <td>Ramsey discounting parameters: pure rate of time preference / elasticity of marginal utility</td>
+                </tr>
+                <tr>
+                  <td><code>run</code> / <code>climate</code> / <code>dmgfuncpar</code></td>
+                  <td><code>string</code></td>
+                  <td>Model specifications: damage specification, climate uncertainty, and econometric parameters</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
