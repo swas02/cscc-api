@@ -24,8 +24,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -35,20 +33,6 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
-
-      - name: Sync Static CSCC Data Assets
-        run: |
-          mkdir -p public/v1
-          if [ -d "cscc-local/data" ] && [ -f "cscc-local/meta.json" ]; then
-            echo "Using compiled binaries from cscc-local..."
-            cp -r cscc-local/data public/v1/
-            cp cscc-local/meta.json public/v1/
-          else
-            echo "Fetching compact binary release from cscc-local..."
-            curl -sL https://github.com/swas02/cscc-local/releases/latest/download/cscc-data-binaries.zip -o cscc-data.zip
-            unzip -o cscc-data.zip -d public/v1/
-            rm -f cscc-data.zip
-          fi
 
       - name: Build Vite App & Static Assets
         run: npm run build

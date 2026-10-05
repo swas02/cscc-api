@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "cscc-local": "file:./cscc-local"
+    "cscc-local": "github:swas02/cscc-local"
   },
   "devDependencies": {
     "vite": "^6.0.0"
