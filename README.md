@@ -29,7 +29,7 @@ Explore data interactively with real-time performance metrics (execution latency
 
 | Environment | Recommended Solution | Setup |
 | :--- | :--- | :--- |
-| **Node.js & Bun (Backend / Offline)** | **[cscc-local](https://github.com/swas02/cscc-local)** | `git clone https://github.com/swas02/cscc-local`<br>`const cscc = require('cscc-local');`<br>*100% offline, zero network calls* |
+| **Node.js & Bun (Backend / Offline)** | **[cscc-local](https://github.com/swas02/cscc-local)** | `npm install github:swas02/cscc-local#v1.0.0`<br>`const cscc = require('cscc-local');`<br>*100% offline, zero network calls* |
 | **Web Browsers (Frontend / CDN)** | **`cscc-api` CDN** | `<script src="https://swas02.github.io/cscc-api/v1/index.js"></script>`<br>*Loads lightweight ~23 KB per country* |
 
 ---
