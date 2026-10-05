@@ -281,74 +281,418 @@
     <!-- Integration & Code Quickstart -->
     <section id="integration" class="mb-5">
       <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3 border-bottom">
-          <h4 class="card-title fw-bold mb-0 text-dark">
-            <i class="bi bi-code-slash text-success me-2"></i>Quickstart & Client Integration
-          </h4>
+        <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div>
+            <h4 class="card-title fw-bold mb-0 text-dark">
+              <i class="bi bi-code-slash text-success me-2"></i>Quickstart & Client Integration
+            </h4>
+            <small class="text-muted">Integrate CSCC data into your web application or Node.js environment in 3 simple steps</small>
+          </div>
+          <span class="badge bg-light text-dark border">
+            <i class="bi bi-link-45deg me-1"></i>Endpoint: <code>https://swas02.github.io/cscc-api/v1/</code>
+          </span>
         </div>
         <div class="card-body p-4">
-          <ul class="nav nav-pills mb-3" id="quickstartTabs" role="tablist">
+          <ul class="nav nav-pills mb-4" id="quickstartTabs" role="tablist">
             <li class="nav-item" role="presentation">
               <button class="nav-link active fw-semibold" id="browser-tab" data-bs-toggle="pill" data-bs-target="#browser-pane" type="button" role="tab">
-                <i class="bi bi-browser-chrome me-1"></i>Browser Script
+                <i class="bi bi-browser-chrome me-1"></i>Browser (Frontend)
               </button>
             </li>
             <li class="nav-item" role="presentation">
               <button class="nav-link fw-semibold" id="node-tab" data-bs-toggle="pill" data-bs-target="#node-pane" type="button" role="tab">
-                <i class="bi bi-terminal me-1"></i>Node.js (18+)
+                <i class="bi bi-terminal me-1"></i>Node.js (Backend)
               </button>
             </li>
           </ul>
 
-          <div class="tab-content border rounded bg-dark p-3" id="quickstartTabContent">
+          <div class="tab-content" id="quickstartTabContent">
             <!-- Browser Tab -->
             <div class="tab-pane fade show active" id="browser-pane" role="tabpanel">
-              <pre class="text-light mb-0 font-monospace"><code>&lt;!-- Load the zero-dependency client from GitHub Pages or CDN --&gt;
-&lt;script src="https://&lt;username&gt;.github.io/&lt;repo&gt;/v1/index.js"&gt;&lt;/script&gt;
+              <div class="d-flex flex-column gap-3 mb-4">
+
+                <!-- Step 1: Load script & Initialize -->
+                <div class="card border border-light-subtle shadow-sm">
+                  <div class="card-header bg-white py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-primary rounded-pill px-2 py-1">Step 1</span>
+                      <strong class="text-dark">Load Client Script & Initialize (<code>DataAPI.ready()</code>)</strong>
+                    </div>
+                  </div>
+                  <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                      Add the official zero-dependency script to your HTML document. It automatically resolves its base endpoint to <code>https://swas02.github.io/cscc-api/v1/</code> and exposes <code>window.DataAPI</code>. Calling <code>DataAPI.ready()</code> downloads and caches shared schema metadata (<code>meta.json</code>, ~10 KB):
+                    </p>
+                    <div class="position-relative bg-dark rounded-2 p-3">
+                      <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2 copy-btn" style="min-width: 82px;" onclick="copySnippet('browserStep1', this)" title="Copy code">
+                        <i class="bi bi-clipboard me-1"></i>Copy
+                      </button>
+                      <pre class="text-light mb-0 font-monospace small pe-5"><code id="browserStep1">&lt;!-- 1. Include the zero-dependency client script --&gt;
+&lt;script src="https://swas02.github.io/cscc-api/v1/index.js"&gt;&lt;/script&gt;
 
 &lt;script&gt;
-  // Automatically resolves baseUrl relative to the script tag location
-  DataAPI.ready().then(async () => {
-    // 1. Fetch filtered scenario data for a country
-    const results = await DataAPI.getData('IND', {
-      ssp: 2,
-      rcp: 4.5,
-      dr: 3
-    });
-    console.log('Returned rows:', results);
-
-    // 2. Fetch an exact single scenario point
-    const single = await DataAPI.get('USA', {
-      run: 'bhm_sr',
-      dmgfuncpar: 'bootstrap',
-      climate: 'expected',
-      ssp: 'SSP2',
-      rcp: 'rcp45',
-      dr: 3
-    });
-    console.log('USA Median CSCC:', single.p50);
-  });
+  // 2. Initialize and verify release metadata
+  const meta = await DataAPI.ready();
+  console.log('API Ready! Release metadata:', meta);
+  // Returns: { dataVersion: 'v1', formatVersion: 1, schemaHash: 'fad69cfd...', rows: 1458, countries: 170 }
 &lt;/script&gt;</code></pre>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 2: List Countries -->
+                <div class="card border border-light-subtle shadow-sm">
+                  <div class="card-header bg-white py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-primary rounded-pill px-2 py-1">Step 2</span>
+                      <strong class="text-dark">List All Supported Countries (<code>DataAPI.countries()</code>)</strong>
+                    </div>
+                  </div>
+                  <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                      Call <code>DataAPI.countries()</code> to retrieve the complete sorted list of all 170 ISO-3 country codes. Each country corresponds to a standalone 23.3 KB binary file (e.g., <code>IND.bin</code>, <code>USA.bin</code>). Ideal for populating country dropdown menus:
+                    </p>
+                    <div class="position-relative bg-dark rounded-2 p-3">
+                      <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2 copy-btn" style="min-width: 82px;" onclick="copySnippet('browserStep2', this)" title="Copy code">
+                        <i class="bi bi-clipboard me-1"></i>Copy
+                      </button>
+                      <pre class="text-light mb-0 font-monospace small pe-5"><code id="browserStep2">const countryList = await DataAPI.countries();
+console.log(`Loaded ${countryList.length} countries:`, countryList);
+// ['AFG', 'AGO', 'ALB', ..., 'IND', ..., 'USA', ..., 'ZWE']
+
+// Example: Dynamically populate an HTML &lt;select&gt; dropdown
+const select = document.getElementById('myCountrySelect');
+countryList.forEach(iso =&gt; {
+  const opt = document.createElement('option');
+  opt.value = iso;
+  opt.textContent = iso;
+  select.appendChild(opt);
+});</code></pre>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 3: Discover Available Parameters & Dimensions -->
+                <div class="card border border-light-subtle shadow-sm">
+                  <div class="card-header bg-white py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-primary rounded-pill px-2 py-1">Step 3</span>
+                      <strong class="text-dark">Discover Available Parameters & Options (<code>DataAPI.options(filter)</code>)</strong>
+                    </div>
+                  </div>
+                  <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                      Call <code>DataAPI.options()</code> to discover all allowed dimension values, or pass partial filters to inspect available choices constrained by prior selections:
+                    </p>
+                    <div class="table-responsive mb-3">
+                      <table class="table table-bordered table-sm small mb-0 bg-white">
+                        <thead class="table-light">
+                          <tr>
+                            <th style="width: 15%;">Parameter</th>
+                            <th style="width: 35%;">Description</th>
+                            <th>Supported Values / Formats</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><code>run</code></td>
+                            <td>Damage specification model</td>
+                            <td><code>'bhm_sr'</code> (short-run), <code>'bhm_lr'</code> (long-run), <code>'bhm_richpoor_sr'</code>, <code>'bhm_richpoor_lr'</code>, <code>'djk'</code></td>
+                          </tr>
+                          <tr>
+                            <td><code>dmgfuncpar</code></td>
+                            <td>Damage function parameterization</td>
+                            <td><code>'bootstrap'</code> (1,000 empirical draws), <code>'point'</code> (central trajectory)</td>
+                          </tr>
+                          <tr>
+                            <td><code>climate</code></td>
+                            <td>Climate response model</td>
+                            <td><code>'expected'</code> (ensemble expected warming)</td>
+                          </tr>
+                          <tr>
+                            <td><code>ssp</code></td>
+                            <td>Shared Socioeconomic Pathway</td>
+                            <td>Numbers <code>1, 2, 3, 4, 5</code> or strings <code>'SSP1'</code> to <code>'SSP5'</code></td>
+                          </tr>
+                          <tr>
+                            <td><code>rcp</code></td>
+                            <td>Representative Concentration Pathway</td>
+                            <td>Numbers <code>4.5, 6.0, 8.5</code> or strings <code>'rcp45'</code>, <code>'rcp60'</code>, <code>'rcp85'</code></td>
+                          </tr>
+                          <tr>
+                            <td><code>dr</code></td>
+                            <td>Constant discount rate (%)</td>
+                            <td>Numbers <code>1.5, 2, 2.5, 3, 5</code> or strings <code>'1.5%'</code>, <code>'3%'</code> (or growth-adjusted <code>prtp</code> & <code>eta</code>)</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="position-relative bg-dark rounded-2 p-3">
+                      <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2 copy-btn" style="min-width: 82px;" onclick="copySnippet('browserStep3', this)" title="Copy code">
+                        <i class="bi bi-clipboard me-1"></i>Copy
+                      </button>
+                      <pre class="text-light mb-0 font-monospace small pe-5"><code id="browserStep3">// Get all available dimension values
+const allOptions = await DataAPI.options();
+console.log('Available SSPs:', allOptions.ssp);  // ['SSP1', 'SSP2', 'SSP3', 'SSP4', 'SSP5']
+console.log('Available RCPs:', allOptions.rcp);  // ['rcp45', 'rcp60', 'rcp85']
+console.log('Discount Rates:', allOptions.dr);   // [1.5, 2, 2.5, 3, 5]
+
+// Get options constrained by a selected SSP
+const ssp2Options = await DataAPI.options({ ssp: 2 });</code></pre>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 4: Query Filtered Scenarios (getData) -->
+                <div class="card border border-light-subtle shadow-sm">
+                  <div class="card-header bg-white py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-primary rounded-pill px-2 py-1">Step 4</span>
+                      <strong class="text-dark">Query Filtered Scenarios (<code>DataAPI.getData(iso3, filter)</code>)</strong>
+                    </div>
+                  </div>
+                  <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                      Fetches the 23.3 KB binary for the specified ISO-3 country (cached in memory) and returns an array of matching scenario objects. Each row contains:
+                    </p>
+                    <ul class="text-muted small mb-3">
+                      <li><code>row.iso</code>: ISO-3 country identifier (e.g. <code>"IND"</code>)</li>
+                      <li><code>row.run</code>, <code>row.dmgfuncpar</code>, <code>row.climate</code>: Damage model specifications</li>
+                      <li><code>row.ssp</code>, <code>row.rcp</code>, <code>row.dr</code>: Pathway & discount parameters</li>
+                      <li><code>row.p50</code>: Median Country-Level Social Cost of Carbon ($/tCO2)</li>
+                      <li><code>row.p16_7</code> & <code>row.p83_3</code>: 66.7% uncertainty bounds (16.7th to 83.3rd percentile)</li>
+                      <li><code>row.n</code>: Number of Monte Carlo bootstrap sample iterations</li>
+                    </ul>
+                    <div class="position-relative bg-dark rounded-2 p-3">
+                      <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2 copy-btn" style="min-width: 82px;" onclick="copySnippet('browserStep4', this)" title="Copy code">
+                        <i class="bi bi-clipboard me-1"></i>Copy
+                      </button>
+                      <pre class="text-light mb-0 font-monospace small pe-5"><code id="browserStep4">// Query filtered scenarios for India (IND)
+const results = await DataAPI.getData('IND', {
+  ssp: 2,     // SSP2
+  rcp: 4.5,   // rcp45
+  dr: 3       // 3% discount rate
+});
+
+console.log(`Found ${results.length} matching scenarios for India:`);
+results.forEach(row =&gt; {
+  console.log(`Model: ${row.run} (${row.dmgfuncpar}) | Median: $${row.p50}/tCO2 | 16.7%-83.3%: [$${row.p16_7}, $${row.p83_3}] | Samples: ${row.n}`);
+});</code></pre>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 5: Fast Exact Point Lookup (get) -->
+                <div class="card border border-light-subtle shadow-sm">
+                  <div class="card-header bg-white py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-primary rounded-pill px-2 py-1">Step 5</span>
+                      <strong class="text-dark">Fast Single-Point Lookup (<code>DataAPI.get(iso3, exactKey)</code>)</strong>
+                    </div>
+                  </div>
+                  <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                      When you have an exact scenario specification, <code>DataAPI.get()</code> computes a direct O(1) coordinate offset without scanning the row list. Returns the single scenario object or <code>null</code>:
+                    </p>
+                    <div class="position-relative bg-dark rounded-2 p-3">
+                      <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2 copy-btn" style="min-width: 82px;" onclick="copySnippet('browserStep5', this)" title="Copy code">
+                        <i class="bi bi-clipboard me-1"></i>Copy
+                      </button>
+                      <pre class="text-light mb-0 font-monospace small pe-5"><code id="browserStep5">// Lookup exact scenario point for United States (USA)
+const usaPoint = await DataAPI.get('USA', {
+  run: 'bhm_sr',
+  dmgfuncpar: 'bootstrap',
+  climate: 'expected',
+  ssp: 2,
+  rcp: 4.5,
+  dr: 3
+});
+
+if (usaPoint) {
+  console.log(`USA Median CSCC: $${usaPoint.p50} / tCO2`);
+  console.log(`Confidence Bounds: $${usaPoint.p16_7} to $${usaPoint.p83_3}`);
+  console.log(`Samples: ${usaPoint.n}`);
+}</code></pre>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 6: Optimization & Cache Controls -->
+                <div class="card border border-light-subtle shadow-sm">
+                  <div class="card-header bg-white py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-primary rounded-pill px-2 py-1">Step 6</span>
+                      <strong class="text-dark">Optimization & Cache Controls (<code>prefetch</code>, <code>configure</code>, <code>clearCache</code>)</strong>
+                    </div>
+                  </div>
+                  <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                      Control network timeouts, retries, LRU memory cache limits, and pre-warm country binaries in the background for zero-latency interactions:
+                    </p>
+                    <div class="position-relative bg-dark rounded-2 p-3">
+                      <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2 copy-btn" style="min-width: 82px;" onclick="copySnippet('browserStep6', this)" title="Copy code">
+                        <i class="bi bi-clipboard me-1"></i>Copy
+                      </button>
+                      <pre class="text-light mb-0 font-monospace small pe-5"><code id="browserStep6">// Pre-warm memory cache for top economies concurrently
+await DataAPI.prefetch(['USA', 'CHN', 'IND', 'DEU', 'JPN']);
+
+// Configure timeout, retry policies, and cache size
+DataAPI.configure({
+  timeoutMs: 10000, // 10s HTTP timeout
+  retries: 2,       // Retry failed fetches up to 2 times
+  maxCached: 50     // Limit LRU memory cache to 50 countries
+});
+
+// Flush in-memory binary cache when needed
+DataAPI.clearCache();</code></pre>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
 
             <!-- Node.js Tab -->
             <div class="tab-pane fade" id="node-pane" role="tabpanel">
-              <pre class="text-light mb-0 font-monospace"><code>const DataAPI = require('./src/index.js'); // or from npm package
+              <div class="d-flex flex-column gap-3 mb-4">
 
-// In Node.js, specify the base static URL
+                <!-- Step 1 Node -->
+                <div class="card border border-light-subtle shadow-sm">
+                  <div class="card-header bg-white py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-success rounded-pill px-2 py-1">Step 1</span>
+                      <strong class="text-dark">Import & Configure Base URL</strong>
+                    </div>
+                  </div>
+                  <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                      Require the client module in Node.js (v18+ with native fetch) and configure the public GitHub Pages endpoint:
+                    </p>
+                    <div class="position-relative bg-dark rounded-2 p-3">
+                      <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2 copy-btn" style="min-width: 82px;" onclick="copySnippet('nodeStep1', this)" title="Copy code">
+                        <i class="bi bi-clipboard me-1"></i>Copy
+                      </button>
+                      <pre class="text-light mb-0 font-monospace small pe-5"><code id="nodeStep1">const DataAPI = require('./src/index.js'); // or from npm package
+
+// Configure the live endpoint
 DataAPI.configure({
-  baseUrl: 'https://&lt;username&gt;.github.io/&lt;repo&gt;/v1/'
+  baseUrl: 'https://swas02.github.io/cscc-api/v1/'
 });
 
-async function run() {
-  await DataAPI.ready();
+// Initialize metadata
+const meta = await DataAPI.ready();
+console.log('Connected to CSCC API:', meta.dataVersion);</code></pre>
+                    </div>
+                  </div>
+                </div>
 
-  // Query country data
-  const data = await DataAPI.getData('USA', { ssp: 2, rcp: 4.5, dr: 3 });
-  console.log(`Loaded ${data.length} records for USA:`, data[0]);
-}
+                <!-- Step 2 Node -->
+                <div class="card border border-light-subtle shadow-sm">
+                  <div class="card-header bg-white py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-success rounded-pill px-2 py-1">Step 2</span>
+                      <strong class="text-dark">List Supported Countries (<code>DataAPI.countries()</code>)</strong>
+                    </div>
+                  </div>
+                  <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                      Retrieve all 170 ISO-3 country codes available in the static dataset:
+                    </p>
+                    <div class="position-relative bg-dark rounded-2 p-3">
+                      <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2 copy-btn" style="min-width: 82px;" onclick="copySnippet('nodeStep2', this)" title="Copy code">
+                        <i class="bi bi-clipboard me-1"></i>Copy
+                      </button>
+                      <pre class="text-light mb-0 font-monospace small pe-5"><code id="nodeStep2">const countries = await DataAPI.countries();
+console.log(`Supported countries count: ${countries.length}`);
+// ['AFG', 'AGO', 'ALB', ..., 'IND', ..., 'USA', ..., 'ZWE']</code></pre>
+                    </div>
+                  </div>
+                </div>
 
-run();</code></pre>
+                <!-- Step 3 Node -->
+                <div class="card border border-light-subtle shadow-sm">
+                  <div class="card-header bg-white py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-success rounded-pill px-2 py-1">Step 3</span>
+                      <strong class="text-dark">Discover Available Parameters (<code>DataAPI.options()</code>)</strong>
+                    </div>
+                  </div>
+                  <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                      Query available models, pathways, and discount rates:
+                    </p>
+                    <div class="position-relative bg-dark rounded-2 p-3">
+                      <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2 copy-btn" style="min-width: 82px;" onclick="copySnippet('nodeStep3', this)" title="Copy code">
+                        <i class="bi bi-clipboard me-1"></i>Copy
+                      </button>
+                      <pre class="text-light mb-0 font-monospace small pe-5"><code id="nodeStep3">const options = await DataAPI.options();
+console.log('Damage models:', options.run);      // ['bhm_sr', 'bhm_lr', 'bhm_richpoor_sr', ...]
+console.log('SSPs:', options.ssp);              // ['SSP1', 'SSP2', 'SSP3', 'SSP4', 'SSP5']
+console.log('RCPs:', options.rcp);              // ['rcp45', 'rcp60', 'rcp85']
+console.log('Discount rates:', options.dr);     // [1.5, 2, 2.5, 3, 5]</code></pre>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 4 Node -->
+                <div class="card border border-light-subtle shadow-sm">
+                  <div class="card-header bg-white py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-success rounded-pill px-2 py-1">Step 4</span>
+                      <strong class="text-dark">Query Filtered Scenarios (<code>DataAPI.getData()</code>)</strong>
+                    </div>
+                  </div>
+                  <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                      Query scenarios filtered by SSP, RCP, and discount rate:
+                    </p>
+                    <div class="position-relative bg-dark rounded-2 p-3">
+                      <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2 copy-btn" style="min-width: 82px;" onclick="copySnippet('nodeStep4', this)" title="Copy code">
+                        <i class="bi bi-clipboard me-1"></i>Copy
+                      </button>
+                      <pre class="text-light mb-0 font-monospace small pe-5"><code id="nodeStep4">const indScenarios = await DataAPI.getData('IND', {
+  ssp: 2,
+  rcp: 4.5,
+  dr: 3
+});
+
+console.log(`Matched ${indScenarios.length} scenarios for India:`);
+console.log(indScenarios[0]);</code></pre>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 5 Node -->
+                <div class="card border border-light-subtle shadow-sm">
+                  <div class="card-header bg-white py-2 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-success rounded-pill px-2 py-1">Step 5</span>
+                      <strong class="text-dark">Single Point Lookup (<code>DataAPI.get()</code>)</strong>
+                    </div>
+                  </div>
+                  <div class="card-body p-3">
+                    <p class="text-muted small mb-2">
+                      Execute an instant O(1) point lookup with all required dimensions:
+                    </p>
+                    <div class="position-relative bg-dark rounded-2 p-3">
+                      <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2 copy-btn" style="min-width: 82px;" onclick="copySnippet('nodeStep5', this)" title="Copy code">
+                        <i class="bi bi-clipboard me-1"></i>Copy
+                      </button>
+                      <pre class="text-light mb-0 font-monospace small pe-5"><code id="nodeStep5">const point = await DataAPI.get('USA', {
+  run: 'bhm_sr',
+  dmgfuncpar: 'bootstrap',
+  climate: 'expected',
+  ssp: 2,
+  rcp: 4.5,
+  dr: 3
+});
+
+console.log(`USA Median CSCC: $${point.p50} / tCO2 (n=${point.n})`);</code></pre>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
         </div>
@@ -564,6 +908,24 @@ run();</code></pre>
         executeLiveQuery();
       });
     })();
+
+    // Clipboard Copy Helper
+    function copySnippet(elementId, btn) {
+      const code = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const originalHTML = btn.innerHTML;
+        btn.classList.remove('btn-outline-secondary', 'text-light');
+        btn.classList.add('btn-success', 'text-white');
+        btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Copied!';
+        setTimeout(() => {
+          btn.classList.remove('btn-success', 'text-white');
+          btn.classList.add('btn-outline-secondary', 'text-light');
+          btn.innerHTML = originalHTML;
+        }, 2000);
+      }).catch((err) => {
+        console.error('Failed to copy: ', err);
+      });
+    }
   </script>
 </body>
 </html>

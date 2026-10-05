@@ -116,60 +116,148 @@ The static release includes a pre-built web dashboard at [`site/index.html`](fil
 
 ## Installation & Quickstart
 
-### Node.js
+The client library works identically in both **modern web browsers** and **Node.js (18+)**. Follow this step-by-step developer guide to utilize all client APIs:
 
-Requires Node.js 18+ (which includes native `fetch`):
+### Step 1: Load and Initialize the Client (`DataAPI.ready()`)
 
+**Browser (HTML)**:
+```html
+<!-- Load the zero-dependency client from GitHub Pages CDN -->
+<script src="https://swas02.github.io/cscc-api/v1/index.js"></script>
+
+<script>
+  // Initialize and verify release metadata
+  const meta = await DataAPI.ready();
+  console.log('API Ready! Release metadata:', meta);
+  // { dataVersion: 'v1', formatVersion: 1, schemaHash: 'fad69cfd...', rows: 1458, countries: 170 }
+</script>
+```
+
+**Node.js (18+)**:
 ```javascript
-const DataAPI = require('./src/index.js');
+const DataAPI = require('./src/index.js'); // or package
 
-// Point DataAPI to your local static directory or CDN URL
-DataAPI.configure({ baseUrl: 'https://example.com/site/v1/' });
+// Configure the static CDN endpoint
+DataAPI.configure({
+  baseUrl: 'https://swas02.github.io/cscc-api/v1/'
+});
 
 async function main() {
-  await DataAPI.ready();
-
-  // Query India for SSP2, RCP 4.5, Discount Rate = 3%
-  const rows = await DataAPI.getData('IND', {
-    ssp: 2,
-    rcp: 4.5,
-    dr: 3
-  });
-
-  console.log(`Found ${rows.length} rows for IND:`);
-  console.log(rows[0]);
+  const meta = await DataAPI.ready();
+  console.log('Connected to CSCC API:', meta.dataVersion);
 }
-
 main();
 ```
 
-### Browser
+---
 
-Include via `<script>` tag:
+### Step 2: List All Supported Countries (`DataAPI.countries()`)
 
-```html
-<!-- Automatically infers baseUrl from the script location -->
-<script src="https://example.com/site/v1/index.js"></script>
+Returns the complete sorted list of all 170 uppercase ISO-3 country codes:
 
-<script>
-  DataAPI.ready().then(async () => {
-    // 1. Fetch available options for dropdowns
-    const options = await DataAPI.options();
-    console.log('Available SSPs:', options.ssp);
+```javascript
+const countries = await DataAPI.countries();
+console.log(`Loaded ${countries.length} countries:`, countries);
+// ['AFG', 'AGO', 'ALB', ..., 'IND', ..., 'USA', ..., 'ZWE']
+```
 
-    // 2. Fetch specific country scenario
-    const usaPoint = await DataAPI.get('USA', {
-      run: 'bhm_sr',
-      dmgfuncpar: 'bootstrap',
-      climate: 'expected',
-      ssp: 'SSP2',
-      rcp: 'rcp45',
-      dr: 3
-    });
+---
 
-    console.log('USA Median CSCC:', usaPoint.p50);
-  });
-</script>
+### Step 3: Discover Available Parameters & Dimensions (`DataAPI.options(filter)`)
+
+Call `DataAPI.options()` to inspect all allowed dimension values, or pass a partial filter to inspect available choices constrained by prior selections:
+
+| Parameter | Type / Format | Description & Supported Values |
+| :--- | :--- | :--- |
+| `run` | `string` | Damage specification: `'bhm_sr'`, `'bhm_lr'`, `'bhm_richpoor_sr'`, `'bhm_richpoor_lr'`, `'djk'` |
+| `dmgfuncpar` | `string` | Damage parameterization: `'bootstrap'` (1,000 draws), `'point'` (central estimate) |
+| `climate` | `string` | Climate response model: `'expected'` |
+| `ssp` | `number` \| `string` | Shared Socioeconomic Pathway: `1, 2, 3, 4, 5` or `'SSP1'` - `'SSP5'` |
+| `rcp` | `number` \| `string` | Representative Concentration Pathway: `4.5, 6.0, 8.5` or `'rcp45'`, `'rcp60'`, `'rcp85'` |
+| `dr` | `number` \| `string` | Constant discount rate: `1.5, 2, 2.5, 3, 5` or `'1.5%'`, `'3%'` (or Ramsey `prtp`, `eta`) |
+
+```javascript
+// Get all available dimension options
+const options = await DataAPI.options();
+console.log('Available SSPs:', options.ssp); // ['SSP1', 'SSP2', 'SSP3', 'SSP4', 'SSP5']
+console.log('Available RCPs:', options.rcp); // ['rcp45', 'rcp60', 'rcp85']
+console.log('Discount Rates:', options.dr);  // [1.5, 2, 2.5, 3, 5]
+
+// Get choices constrained by selecting SSP2
+const ssp2Choices = await DataAPI.options({ ssp: 2 });
+```
+
+---
+
+### Step 4: Query Filtered Scenarios (`DataAPI.getData(iso3, filter)`)
+
+Fetches the 23.3 KB binary for the given country, decodes it in memory, and filters down to matching scenarios:
+
+```javascript
+// Query filtered scenarios for India (IND)
+const results = await DataAPI.getData('IND', {
+  ssp: 2,     // SSP2
+  rcp: 4.5,   // rcp45
+  dr: 3       // 3% discount rate
+});
+
+console.log(`Found ${results.length} matching scenarios:`);
+results.forEach(row => {
+  console.log(`Model: ${row.run} (${row.dmgfuncpar}) | Median: $${row.p50} / tCO2 | Range: [$${row.p16_7}, $${row.p83_3}] | Samples: ${row.n}`);
+});
+```
+
+Each returned row contains:
+- `row.iso`: ISO-3 country code (`"IND"`)
+- `row.run`: Damage model specification (`"bhm_sr"`)
+- `row.dmgfuncpar`: Damage function parameter (`"bootstrap"` or `"point"`)
+- `row.climate`: Climate model specification (`"expected"`)
+- `row.ssp`: Socioeconomic scenario (`"SSP2"`)
+- `row.rcp`: Emission concentration pathway (`"rcp45"`)
+- `row.dr`: Discount rate (`3`)
+- `row.p50`: 50th percentile (median) Country Social Cost of Carbon ($/tCO2)
+- `row.p16_7`: 16.7th percentile estimate ($/tCO2)
+- `row.p83_3`: 83.3rd percentile estimate ($/tCO2)
+- `row.n`: Monte Carlo bootstrap sample size (e.g. 1000)
+
+---
+
+### Step 5: Fast Single-Point Lookup (`DataAPI.get(iso3, exactKey)`)
+
+Performs an instant $O(1)$ coordinate lookup without scanning row arrays. Returns the single scenario object or `null`:
+
+```javascript
+const point = await DataAPI.get('USA', {
+  run: 'bhm_sr',
+  dmgfuncpar: 'bootstrap',
+  climate: 'expected',
+  ssp: 2,
+  rcp: 4.5,
+  dr: 3
+});
+
+if (point) {
+  console.log(`USA Median CSCC: $${point.p50} / tCO2 (n=${point.n})`);
+}
+```
+
+---
+
+### Step 6: Advanced Cache & Prefetch Controls
+
+```javascript
+// Pre-load top countries concurrently into memory cache
+await DataAPI.prefetch(['USA', 'CHN', 'IND', 'DEU', 'JPN']);
+
+// Configure timeouts, retries, and LRU memory limit
+DataAPI.configure({
+  timeoutMs: 10000, // 10 second timeout
+  retries: 2,       // Retry network fetches twice
+  maxCached: 50     // Keep at most 50 countries in memory
+});
+
+// Clear cache
+DataAPI.clearCache();
 ```
 
 ---
