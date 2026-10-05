@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Country-Level Social Cost of Carbon (CSCC) - Interactive Web Portal & Static API</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body class="bg-light">
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
+        <i class="bi bi-cpu-fill text-info"></i>
+        <span>CSCC Data API</span>
+        <span class="badge bg-primary text-uppercase">v1.0</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2">
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#playground"><i class="bi bi-play-circle me-1"></i>Live Playground</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#integration"><i class="bi bi-code-square me-1"></i>Quickstart</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#endpoints"><i class="bi bi-hdd-network me-1"></i>Endpoints</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-sm btn-outline-info ms-lg-2" href="https://github.com/swas02/cscc-local" target="_blank" rel="noopener">
+              <i class="bi bi-github me-1"></i>cscc-local (Node/Bun)
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="bg-white py-5 border-bottom shadow-sm">
+    <div class="container text-center">
+      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-success-subtle text-success border border-success-subtle mb-3">
+        <i class="bi bi-check-circle-fill"></i>
+        <small class="fw-semibold">100% Verified Census (1.24M+ Assertions Passing)</small>
+      </div>
+      <h1 class="display-5 fw-bold text-dark mb-3">Country-Level Social Cost of Carbon API</h1>
+      <p class="lead text-secondary mx-auto mb-4 col-lg-8">
+        A fast, zero-dependency static data API that compiles 247,860 scenarios (~2.5 lakh rows) into lightweight per-country binary files (~22.8 KB each) for instant client-side querying.
+      </p>
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="#playground" class="btn btn-primary btn-lg px-4 shadow-sm">
+          <i class="bi bi-sliders me-1"></i> Try Interactive Query
+        </a>
+        <a href="#integration" class="btn btn-outline-secondary btn-lg px-4">
+          <i class="bi bi-terminal me-1"></i> Get Integration Code
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-5">
+
+    <!-- Mandatory Attribution & Ownership Alert -->
+    <div class="alert alert-warning border-warning shadow-sm rounded-3 p-4 mb-5" role="alert">
+      <div class="d-flex align-items-start gap-3">
+        <i class="bi bi-exclamation-triangle-fill fs-3 text-warning"></i>
+        <div>
+          <h5 class="alert-heading fw-bold mb-1">Data Ownership & Attribution Disclaimer</h5>
+          <p class="mb-2">
+            The original authors and owners of the underlying CSV dataset are 
+            <a href="https://github.com/country-level-scc/" target="_blank" rel="noopener" class="alert-link fw-bold">country-level-scc</a> 
+            (published in <em>Nature Climate Change</em> by Ricke et al., 2018).
+          </p>
+          <p class="mb-0 text-muted">
+            <strong>The maintainers of this repository are NOT the owners or creators of the CSV data.</strong> 
+            This project provides solely the static API release format, compression tooling, and the client JavaScript library to query the published dataset efficiently in web browsers and programmatic environments.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-muted fw-bold text-uppercase small">Total Countries</span>
+              <span class="badge bg-primary-subtle text-primary p-2 rounded"><i class="bi bi-globe fs-5"></i></span>
+            </div>
+            <h2 class="card-title fw-bold mb-1">170</h2>
+            <p class="card-text text-muted small">ISO-3 country binary files</p>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-muted fw-bold text-uppercase small">Scenarios Per Country</span>
+              <span class="badge bg-success-subtle text-success p-2 rounded"><i class="bi bi-diagram-3 fs-5"></i></span>
+            </div>
+            <h2 class="card-title fw-bold mb-1">1,458</h2>
+            <p class="card-text text-muted small">Combinations of SSP, RCP, damage models</p>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-muted fw-bold text-uppercase small">Total Release Size</span>
+              <span class="badge bg-info-subtle text-info p-2 rounded"><i class="bi bi-file-earmark-zip fs-5"></i></span>
+            </div>
+            <h2 class="card-title fw-bold mb-1">3.8 MB</h2>
+            <p class="card-text text-muted small">Compared to monolithic 27.5 MB CSV</p>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-muted fw-bold text-uppercase small">Size Per Query</span>
+              <span class="badge bg-warning-subtle text-warning p-2 rounded"><i class="bi bi-lightning-charge fs-5"></i></span>
+            </div>
+            <h2 class="card-title fw-bold mb-1">~23 KB</h2>
+            <p class="card-text text-muted small">Download only the country you need</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Interactive Playground Section -->
+    <section id="playground" class="mb-5">
+      <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div>
+            <h4 class="card-title fw-bold mb-0 text-dark">
+              <i class="bi bi-sliders text-primary me-2"></i>Interactive Query Playground
+            </h4>
+            <small class="text-muted">Instant client-side binary decoding and percentile retrieval</small>
+          </div>
+          <span class="badge bg-secondary" id="apiStatusBadge">Initializing API...</span>
+        </div>
+
+        <div class="card-body p-4">
+          <form id="queryForm" class="row g-3">
+            <div class="col-md-3">
+              <label for="countrySelect" class="form-label fw-bold small text-uppercase">Country (ISO3)</label>
+              <select id="countrySelect" class="form-select">
+                <option value="IND" selected>IND (India)</option>
+                <option value="USA">USA (United States)</option>
+                <option value="CHN">CHN (China)</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="sspSelect" class="form-label fw-bold small text-uppercase">Socioeconomic Pathway (SSP)</label>
+              <select id="sspSelect" class="form-select">
+                <option value="SSP1">SSP1 (Sustainability)</option>
+                <option value="SSP2" selected>SSP2 (Middle of the Road)</option>
+                <option value="SSP3">SSP3 (Regional Rivalry)</option>
+                <option value="SSP4">SSP4 (Inequality)</option>
+                <option value="SSP5">SSP5 (Fossil-fueled Development)</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="rcpSelect" class="form-label fw-bold small text-uppercase">Forcing Level (RCP)</label>
+              <select id="rcpSelect" class="form-select">
+                <option value="rcp45" selected>RCP 4.5</option>
+                <option value="rcp60">RCP 6.0</option>
+                <option value="rcp85">RCP 8.5</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="drSelect" class="form-label fw-bold small text-uppercase">Discount Rate</label>
+              <select id="drSelect" class="form-select">
+                <option value="3" selected>3% Constant</option>
+                <option value="5">5% Constant</option>
+              </select>
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-primary px-4 fw-semibold shadow-sm">
+                <i class="bi bi-search me-1"></i> Run Query
+              </button>
+            </div>
+          </form>
+
+          <!-- Live Stats & Benchmarks Banner -->
+          <div class="mt-4 pt-3 border-top">
+            <h6 class="fw-bold text-muted text-uppercase small mb-3">Live Client Performance Metrics:</h6>
+            <div class="row row-cols-2 row-cols-md-4 g-2 text-center">
+              <div class="col">
+                <div class="p-2 border rounded bg-body-tertiary">
+                  <small class="text-muted d-block">Round-Trip Time</small>
+                  <strong class="fs-6 text-dark" id="statTime">-- ms</strong>
+                </div>
+              </div>
+              <div class="col">
+                <div class="p-2 border rounded bg-body-tertiary">
+                  <small class="text-muted d-block">Transfer / Source</small>
+                  <strong class="fs-6 text-dark" id="statTransfer">-- KB</strong>
+                </div>
+              </div>
+              <div class="col">
+                <div class="p-2 border rounded bg-body-tertiary">
+                  <small class="text-muted d-block">Scenarios Returned</small>
+                  <strong class="fs-6 text-dark" id="statRows">-- / 1458</strong>
+                </div>
+              </div>
+              <div class="col">
+                <div class="p-2 border rounded bg-body-tertiary">
+                  <small class="text-muted d-block">Throughput</small>
+                  <strong class="fs-6 text-dark" id="statThroughput">-- rows/sec</strong>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 text-end">
+              <span class="badge bg-secondary" id="cacheBadge">Awaiting query...</span>
+            </div>
+          </div>
+
+          <!-- Loading Spinner -->
+          <div id="loadingSpinner" class="text-center py-5 d-none">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading binary payload...</span>
+            </div>
+            <p class="text-muted small mt-2">Fetching and decoding binary payload...</p>
+          </div>
+
+          <!-- Results Section -->
+          <div id="resultsWrapper" class="mt-4 d-none">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="fw-bold mb-0 text-dark">
+                Query Results <span class="badge bg-primary-subtle text-primary ms-1" id="resultsCount">0 rows</span>
+              </h5>
+              <small class="text-muted font-monospace" id="executionTime">Total time: 0 ms</small>
+            </div>
+            <div class="table-responsive border rounded-3 bg-white shadow-sm" style="max-height: 400px;">
+              <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-dark sticky-top">
+                  <tr>
+                    <th scope="col">Damage Model</th>
+                    <th scope="col">Parameters</th>
+                    <th scope="col">Climate Response</th>
+                    <th scope="col" class="text-end">16.7% ($/tCO2)</th>
+                    <th scope="col" class="text-end text-info">50% Median ($/tCO2)</th>
+                    <th scope="col" class="text-end">83.3% ($/tCO2)</th>
+                    <th scope="col" class="text-center">Samples (N)</th>
+                  </tr>
+                </thead>
+                <tbody id="resultsTableBody">
+                  <!-- Generated Rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Integration Guide -->
+    <section id="integration" class="mb-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h4 class="card-title fw-bold mb-0 text-dark">
+            <i class="bi bi-code-square text-success me-2"></i>Integration Quickstart
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <ul class="nav nav-pills mb-4" id="integrationTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="browser-tab" data-bs-toggle="pill" data-bs-target="#browser-pane" type="button" role="tab">
+                <i class="bi bi-window me-1"></i>Browser (<code class="text-light">&lt;script&gt;</code>)
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="node-tab" data-bs-toggle="pill" data-bs-target="#node-pane" type="button" role="tab">
+                <i class="bi bi-terminal me-1"></i>Node.js & Bun (<code class="text-light">cscc-local</code>)
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="integrationTabsContent">
+            <!-- Browser Tab -->
+            <div class="tab-pane fade show active" id="browser-pane" role="tabpanel">
+              <p class="text-muted mb-3">
+                Include the client library from the static release path. It automatically detects its base URL and requires zero external dependencies:
+              </p>
+              <div class="position-relative bg-dark rounded-3 p-3 mb-3">
+                <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2" onclick="copySnippet('codeBrowser', this)">
+                  <i class="bi bi-clipboard me-1"></i>Copy
+                </button>
+                <pre class="text-light mb-0 font-monospace small"><code id="codeBrowser">&lt;!-- Load client library from static release path --&gt;
+&lt;script src="https://swas02.github.io/cscc-api/v1/index.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  DataAPI.ready().then(async () => {
+    // Query scenarios for India
+    const rows = await DataAPI.getData('IND', {
+      ssp: 2,
+      rcp: 4.5,
+      dr: 3
+    });
+    console.log('Returned scenarios:', rows);
+  });
+&lt;/script&gt;</code></pre>
+              </div>
+            </div>
+
+            <!-- Node.js Tab -->
+            <div class="tab-pane fade" id="node-pane" role="tabpanel">
+              <p class="text-muted mb-3">
+                For Node.js and Bun, use the offline-first standalone <strong><code>cscc-local</code></strong> module:
+              </p>
+              <div class="position-relative bg-dark rounded-3 p-3 mb-3">
+                <button type="button" class="btn btn-sm btn-outline-secondary text-light position-absolute top-0 end-0 m-2 py-1 px-2" onclick="copySnippet('codeNode', this)">
+                  <i class="bi bi-clipboard me-1"></i>Copy
+                </button>
+                <pre class="text-light mb-0 font-monospace small"><code id="codeNode">// Clone or install cscc-local
+// git clone https://github.com/swas02/cscc-local.git
+
+const cscc = require('cscc-local'); // or require('.')
+
+async function main() {
+  // 100% offline, zero network requests
+  const rows = await cscc.getData('IND', { ssp: 2, rcp: 4.5, dr: 3 });
+  console.log('Results:', rows[0]);
+
+  // Synchronous point query (zero await):
+  const point = cscc.getSync('USA', {
+    run: 'bhm_sr', dmgfuncpar: 'bootstrap', climate: 'expected',
+    ssp: 2, rcp: 4.5, dr: 3
+  });
+  console.log('USA Median:', point.p50);
+}
+main();</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Endpoints Reference -->
+    <section id="endpoints" class="mb-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h4 class="card-title fw-bold mb-0 text-dark">
+            <i class="bi bi-hdd-network text-info me-2"></i>Static API Endpoint Index
+          </h4>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" class="ps-4">Resource</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Format / Payload</th>
+                  <th scope="col" class="pe-4">Direct Link</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="ps-4 fw-semibold"><code>/latest.json</code></td>
+                  <td><span class="badge bg-secondary">JSON</span></td>
+                  <td>Pointer to latest release and schema hash</td>
+                  <td class="pe-4"><a href="./latest.json" class="btn btn-sm btn-outline-primary" target="_blank">Open latest.json</a></td>
+                </tr>
+                <tr>
+                  <td class="ps-4 fw-semibold"><code>/v1/meta.json</code></td>
+                  <td><span class="badge bg-secondary">JSON</span></td>
+                  <td>Shared key dictionary, row indices, schema metadata</td>
+                  <td class="pe-4"><a href="./v1/meta.json" class="btn btn-sm btn-outline-primary" target="_blank">Open meta.json</a></td>
+                </tr>
+                <tr>
+                  <td class="ps-4 fw-semibold"><code>/v1/data/&lt;ISO3&gt;.bin</code></td>
+                  <td><span class="badge bg-dark">Binary</span></td>
+                  <td>Country binary files (23,344 bytes each, 170 files)</td>
+                  <td class="pe-4">
+                    <a href="./v1/data/IND.bin" class="btn btn-sm btn-outline-secondary me-1" target="_blank">IND.bin</a>
+                    <a href="./v1/data/USA.bin" class="btn btn-sm btn-outline-secondary" target="_blank">USA.bin</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-secondary py-4 border-top border-secondary mt-5">
+    <div class="container text-center">
+      <p class="mb-2 text-white">
+        Country-Level Social Cost of Carbon (CSCC) Static API & Web Client
+      </p>
+      <p class="small mb-2">
+        Data Attribution: <a href="https://github.com/country-level-scc/" class="text-info text-decoration-none" target="_blank" rel="noopener">country-level-scc</a> 
+        | Original Paper: <a href="https://doi.org/10.1038/s41558-018-0282-y" class="text-info text-decoration-none" target="_blank" rel="noopener">Ricke et al., Nat. Clim. Chang. (2018)</a>
+      </p>
+      <p class="small text-muted mb-0">Client Tooling & Static Build: MIT License | Underlying Dataset: Academic Replication Data</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Vite Entry Point -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
