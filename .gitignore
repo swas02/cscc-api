@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+package-lock.json.bak
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Environment / OS
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp

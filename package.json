@@ -1,0 +1,25 @@
+{
+  "name": "cscc-data-api",
+  "version": "1.0.0",
+  "description": "High-performance static API and zero-dependency client library for Country-Level Social Cost of Carbon (CSCC) data across 170 countries.",
+  "main": "src/index.js",
+  "scripts": {
+    "build:data": "python3 build_cscc.py --csv src/cscc_db_v2.csv --out site --version v1 --force",
+    "build:js": "node tools/build_js.mjs",
+    "test": "node test_api.js && node --test test_user_api.js",
+    "test:csv": "node test_api.js",
+    "test:user": "node --test test_user_api.js"
+  },
+  "keywords": [
+    "cscc",
+    "social-cost-of-carbon",
+    "climate-change",
+    "static-api",
+    "environmental-economics",
+    "dataset"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

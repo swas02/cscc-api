@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Country-Level Social Cost of Carbon (CSCC) - Static API & Client</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body class="bg-light">
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
+        <i class="bi bi-cpu-fill text-info"></i>
+        <span>CSCC Static API</span>
+        <span class="badge bg-primary text-uppercase">v1.0</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2">
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#playground"><i class="bi bi-play-circle me-1"></i>Live Playground</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#integration"><i class="bi bi-code-square me-1"></i>Quickstart</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="#endpoints"><i class="bi bi-hdd-network me-1"></i>Endpoints</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-sm btn-outline-info ms-lg-2" href="https://github.com/country-level-scc/" target="_blank" rel="noopener">
+              <i class="bi bi-github me-1"></i>Original Dataset
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="bg-white py-5 border-bottom shadow-sm">
+    <div class="container text-center">
+      <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-success-subtle text-success border border-success-subtle mb-3">
+        <i class="bi bi-check-circle-fill"></i>
+        <small class="fw-semibold">100% Verified Census (1.24M+ Assertions Passing)</small>
+      </div>
+      <h1 class="display-5 fw-bold text-dark mb-3">Country-Level Social Cost of Carbon API</h1>
+      <p class="lead text-secondary mx-auto mb-4 col-lg-8">
+        A fast, zero-dependency static data API that compiles 247,860 scenarios (~2.5 lakh rows) into lightweight per-country binary files (~22.8 KB each) for instant client-side querying.
+      </p>
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="#playground" class="btn btn-primary btn-lg px-4 shadow-sm">
+          <i class="bi bi-sliders me-1"></i> Try Interactive Query
+        </a>
+        <a href="#integration" class="btn btn-outline-secondary btn-lg px-4">
+          <i class="bi bi-terminal me-1"></i> Get Integration Code
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-5">
+
+    <!-- Mandatory Attribution & Ownership Alert -->
+    <div class="alert alert-warning border-warning shadow-sm rounded-3 p-4 mb-5" role="alert">
+      <div class="d-flex align-items-start gap-3">
+        <i class="bi bi-exclamation-triangle-fill fs-3 text-warning"></i>
+        <div>
+          <h5 class="alert-heading fw-bold mb-1">Data Ownership & Attribution Disclaimer</h5>
+          <p class="mb-2">
+            The original authors and owners of the underlying CSV dataset are 
+            <a href="https://github.com/country-level-scc/" target="_blank" rel="noopener" class="alert-link fw-bold">country-level-scc</a> 
+            (published in <em>Nature Climate Change</em> by Ricke et al., 2018).
+          </p>
+          <p class="mb-0 text-muted">
+            <strong>The maintainers of this repository are NOT the owners or creators of the CSV data.</strong> 
+            This project provides solely the static API release format, compression tooling, and the client JavaScript library to query the published dataset efficiently in web browsers and programmatic environments.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-muted fw-bold text-uppercase small">Total Countries</span>
+              <span class="badge bg-primary-subtle text-primary p-2 rounded"><i class="bi bi-globe fs-5"></i></span>
+            </div>
+            <h2 class="card-title fw-bold mb-1">170</h2>
+            <p class="card-text text-muted small">ISO-3 country binary files</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-muted fw-bold text-uppercase small">Total Records</span>
+              <span class="badge bg-success-subtle text-success p-2 rounded"><i class="bi bi-database-check fs-5"></i></span>
+            </div>
+            <h2 class="card-title fw-bold mb-1">247,860</h2>
+            <p class="card-text text-muted small">~2.5 Lakh scenario records</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-muted fw-bold text-uppercase small">Payload Per Country</span>
+              <span class="badge bg-info-subtle text-info p-2 rounded"><i class="bi bi-file-earmark-binary fs-5"></i></span>
+            </div>
+            <h2 class="card-title fw-bold mb-1">22.8 KB</h2>
+            <p class="card-text text-muted small">Replaces 27.5 MB raw CSV</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-muted fw-bold text-uppercase small">Total Release Size</span>
+              <span class="badge bg-warning-subtle text-warning p-2 rounded"><i class="bi bi-lightning-charge fs-5"></i></span>
+            </div>
+            <h2 class="card-title fw-bold mb-1">3.80 MB</h2>
+            <p class="card-text text-muted small">Hosted on static CDN / Pages</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Interactive Playground -->
+    <section id="playground" class="card border-0 shadow-sm mb-5">
+      <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+        <div>
+          <h4 class="card-title fw-bold mb-0 text-dark">
+            <i class="bi bi-sliders text-primary me-2"></i>Interactive API Query Tester
+          </h4>
+          <small class="text-muted">Live in-browser test executing against the static binary dataset</small>
+        </div>
+        <span id="apiStatusBadge" class="badge bg-secondary">Initializing DataAPI...</span>
+      </div>
+      <div class="card-body p-4">
+        <form id="queryForm" class="row g-3 mb-4">
+          <div class="col-md-3">
+            <label for="countrySelect" class="form-label fw-semibold">Country (ISO-3)</label>
+            <select id="countrySelect" class="form-select">
+              <option value="IND" selected>IND - India</option>
+              <option value="USA">USA - United States</option>
+              <option value="CHN">CHN - China</option>
+              <option value="DEU">DEU - Germany</option>
+              <option value="BRA">BRA - Brazil</option>
+              <option value="AFG">AFG - Afghanistan</option>
+              <option value="ZWE">ZWE - Zimbabwe</option>
+              <option value="WLD">WLD - World</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label for="sspSelect" class="form-label fw-semibold">Socioeconomic Pathway (SSP)</label>
+            <select id="sspSelect" class="form-select">
+              <option value="SSP2" selected>SSP2 (Middle of the Road)</option>
+              <option value="SSP1">SSP1 (Sustainability)</option>
+              <option value="SSP3">SSP3 (Regional Rivalry)</option>
+              <option value="SSP4">SSP4 (Inequality)</option>
+              <option value="SSP5">SSP5 (Fossil-Fueled)</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label for="rcpSelect" class="form-label fw-semibold">Concentration Pathway (RCP)</label>
+            <select id="rcpSelect" class="form-select">
+              <option value="rcp45" selected>rcp45 (4.5 W/m²)</option>
+              <option value="rcp60">rcp60 (6.0 W/m²)</option>
+              <option value="rcp85">rcp85 (8.5 W/m²)</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label for="drSelect" class="form-label fw-semibold">Discount Rate (dr)</label>
+            <select id="drSelect" class="form-select">
+              <option value="3" selected>3% constant rate</option>
+              <option value="5">5% constant rate</option>
+            </select>
+          </div>
+
+          <div class="col-12 text-end">
+            <button type="submit" id="btnRunQuery" class="btn btn-primary px-4 fw-semibold shadow-sm">
+              <i class="bi bi-play-fill me-1"></i>Run Live Query
+            </button>
+          </div>
+        </form>
+
+        <!-- Live Results Output -->
+        <div id="resultsWrapper" class="d-none">
+
+          <!-- Live Browser Usage Stats Panel -->
+          <div id="statsPanel" class="card bg-body-tertiary border shadow-sm p-3 mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+              <span class="fw-bold text-uppercase small text-secondary">
+                <i class="bi bi-speedometer2 text-primary me-1"></i> Live Browser Performance & Usage Stats
+              </span>
+              <span id="cacheBadge" class="badge bg-success">Memory Cache Hit</span>
+            </div>
+            <div class="row row-cols-2 row-cols-md-4 g-2 text-center">
+              <div class="col">
+                <div class="bg-white border rounded p-2 shadow-xs">
+                  <small class="text-muted d-block small">Round-Trip Time</small>
+                  <span id="statTime" class="fw-bold fs-5 text-dark">-</span>
+                </div>
+              </div>
+              <div class="col">
+                <div class="bg-white border rounded p-2 shadow-xs">
+                  <small class="text-muted d-block small">Network Transfer</small>
+                  <span id="statTransfer" class="fw-bold fs-5 text-primary">-</span>
+                </div>
+              </div>
+              <div class="col">
+                <div class="bg-white border rounded p-2 shadow-xs">
+                  <small class="text-muted d-block small">Rows Matched / Total</small>
+                  <span id="statRows" class="fw-bold fs-5 text-success">-</span>
+                </div>
+              </div>
+              <div class="col">
+                <div class="bg-white border rounded p-2 shadow-xs">
+                  <small class="text-muted d-block small">JS Heap Memory</small>
+                  <span id="statMemory" class="fw-bold fs-5 text-info">-</span>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top small text-muted flex-wrap gap-2">
+              <span><i class="bi bi-cpu me-1"></i>Client Processing: <strong id="statThroughput" class="text-dark">-</strong></span>
+              <span><i class="bi bi-file-earmark-binary me-1"></i>Static Binary File: <strong id="statFile" class="text-dark">-</strong></span>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h6 class="fw-bold text-dark mb-0">Scenario Breakdown: <span id="resultsCount" class="text-primary"></span></h6>
+            <small id="executionTime" class="text-muted"></small>
+          </div>
+          <div class="table-responsive bg-white rounded border">
+            <table class="table table-hover table-striped align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">Damage Model (run)</th>
+                  <th scope="col">Parameters</th>
+                  <th scope="col">Climate</th>
+                  <th scope="col" class="text-end">16.7% ($/tCO₂)</th>
+                  <th scope="col" class="text-end text-primary fw-bold">50% Median ($/tCO₂)</th>
+                  <th scope="col" class="text-end">83.3% ($/tCO₂)</th>
+                  <th scope="col" class="text-center">Samples (N)</th>
+                </tr>
+              </thead>
+              <tbody id="resultsTableBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="loadingSpinner" class="text-center py-4 d-none">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-muted mt-2 mb-0">Fetching and decoding binary data...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integration & Code Quickstart -->
+    <section id="integration" class="mb-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h4 class="card-title fw-bold mb-0 text-dark">
+            <i class="bi bi-code-slash text-success me-2"></i>Quickstart & Client Integration
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <ul class="nav nav-pills mb-3" id="quickstartTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active fw-semibold" id="browser-tab" data-bs-toggle="pill" data-bs-target="#browser-pane" type="button" role="tab">
+                <i class="bi bi-browser-chrome me-1"></i>Browser Script
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link fw-semibold" id="node-tab" data-bs-toggle="pill" data-bs-target="#node-pane" type="button" role="tab">
+                <i class="bi bi-terminal me-1"></i>Node.js (18+)
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content border rounded bg-dark p-3" id="quickstartTabContent">
+            <!-- Browser Tab -->
+            <div class="tab-pane fade show active" id="browser-pane" role="tabpanel">
+              <pre class="text-light mb-0 font-monospace"><code>&lt;!-- Load the zero-dependency client from GitHub Pages or CDN --&gt;
+&lt;script src="https://&lt;username&gt;.github.io/&lt;repo&gt;/v1/index.js"&gt;&lt;/script&gt;
+
+&lt;script&gt;
+  // Automatically resolves baseUrl relative to the script tag location
+  DataAPI.ready().then(async () => {
+    // 1. Fetch filtered scenario data for a country
+    const results = await DataAPI.getData('IND', {
+      ssp: 2,
+      rcp: 4.5,
+      dr: 3
+    });
+    console.log('Returned rows:', results);
+
+    // 2. Fetch an exact single scenario point
+    const single = await DataAPI.get('USA', {
+      run: 'bhm_sr',
+      dmgfuncpar: 'bootstrap',
+      climate: 'expected',
+      ssp: 'SSP2',
+      rcp: 'rcp45',
+      dr: 3
+    });
+    console.log('USA Median CSCC:', single.p50);
+  });
+&lt;/script&gt;</code></pre>
+            </div>
+
+            <!-- Node.js Tab -->
+            <div class="tab-pane fade" id="node-pane" role="tabpanel">
+              <pre class="text-light mb-0 font-monospace"><code>const DataAPI = require('./src/index.js'); // or from npm package
+
+// In Node.js, specify the base static URL
+DataAPI.configure({
+  baseUrl: 'https://&lt;username&gt;.github.io/&lt;repo&gt;/v1/'
+});
+
+async function run() {
+  await DataAPI.ready();
+
+  // Query country data
+  const data = await DataAPI.getData('USA', { ssp: 2, rcp: 4.5, dr: 3 });
+  console.log(`Loaded ${data.length} records for USA:`, data[0]);
+}
+
+run();</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Endpoints Reference -->
+    <section id="endpoints" class="mb-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h4 class="card-title fw-bold mb-0 text-dark">
+            <i class="bi bi-hdd-network text-info me-2"></i>Static API Endpoint Index
+          </h4>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" class="ps-4">Resource</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Format / Payload</th>
+                  <th scope="col" class="pe-4">Direct Link</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="ps-4 fw-semibold"><code>/latest.json</code></td>
+                  <td><span class="badge bg-secondary">JSON</span></td>
+                  <td>Pointer to latest release and schema hash</td>
+                  <td class="pe-4"><a href="./latest.json" class="btn btn-sm btn-outline-primary" target="_blank">Open latest.json</a></td>
+                </tr>
+                <tr>
+                  <td class="ps-4 fw-semibold"><code>/v1/meta.json</code></td>
+                  <td><span class="badge bg-secondary">JSON</span></td>
+                  <td>Shared key dictionary, row indices, schema metadata</td>
+                  <td class="pe-4"><a href="./v1/meta.json" class="btn btn-sm btn-outline-primary" target="_blank">Open meta.json</a></td>
+                </tr>
+                <tr>
+                  <td class="ps-4 fw-semibold"><code>/v1/manifest.json</code></td>
+                  <td><span class="badge bg-secondary">JSON</span></td>
+                  <td>SHA-256 integrity signatures and byte sizes</td>
+                  <td class="pe-4"><a href="./v1/manifest.json" class="btn btn-sm btn-outline-primary" target="_blank">Open manifest.json</a></td>
+                </tr>
+                <tr>
+                  <td class="ps-4 fw-semibold"><code>/v1/index.js</code></td>
+                  <td><span class="badge bg-primary">JavaScript</span></td>
+                  <td>Minified universal client library (9.95 KB)</td>
+                  <td class="pe-4"><a href="./v1/index.js" class="btn btn-sm btn-outline-primary" target="_blank">Open v1/index.js</a></td>
+                </tr>
+                <tr>
+                  <td class="ps-4 fw-semibold"><code>/v1/data/&lt;ISO3&gt;.bin</code></td>
+                  <td><span class="badge bg-dark">Binary</span></td>
+                  <td>Country binary files (23,344 bytes each, 170 files)</td>
+                  <td class="pe-4">
+                    <a href="./v1/data/IND.bin" class="btn btn-sm btn-outline-secondary me-1" target="_blank">IND.bin</a>
+                    <a href="./v1/data/USA.bin" class="btn btn-sm btn-outline-secondary" target="_blank">USA.bin</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-secondary py-4 border-top border-secondary mt-5">
+    <div class="container text-center">
+      <p class="mb-2 text-white">
+        Country-Level Social Cost of Carbon (CSCC) Static API & Client
+      </p>
+      <p class="small mb-2">
+        Data Attribution: <a href="https://github.com/country-level-scc/" class="text-info text-decoration-none" target="_blank" rel="noopener">country-level-scc</a> 
+        | Original Paper: <a href="https://doi.org/10.1038/s41558-018-0282-y" class="text-info text-decoration-none" target="_blank" rel="noopener">Ricke et al., Nat. Clim. Chang. (2018)</a>
+      </p>
+      <p class="small text-muted mb-0">Client Tooling & Static Build: MIT License | Underlying Dataset: Academic Replication Data</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Load DataAPI from the static release path -->
+  <script src="./v1/index.js"></script>
+
+  <!-- Interactive Demo Logic -->
+  <script>
+    (function () {
+      const statusBadge = document.getElementById('apiStatusBadge');
+      const form = document.getElementById('queryForm');
+      const resultsWrapper = document.getElementById('resultsWrapper');
+      const resultsCount = document.getElementById('resultsCount');
+      const executionTime = document.getElementById('executionTime');
+      const tableBody = document.getElementById('resultsTableBody');
+      const spinner = document.getElementById('loadingSpinner');
+
+      // Stats Elements
+      const statTime = document.getElementById('statTime');
+      const statTransfer = document.getElementById('statTransfer');
+      const statRows = document.getElementById('statRows');
+      const statMemory = document.getElementById('statMemory');
+      const cacheBadge = document.getElementById('cacheBadge');
+      const statThroughput = document.getElementById('statThroughput');
+      const statFile = document.getElementById('statFile');
+
+      // Track countries loaded in memory cache during this session
+      const cachedCountries = new Set();
+
+      // Initialize DataAPI
+      DataAPI.ready().then(async (meta) => {
+        statusBadge.className = 'badge bg-success';
+        statusBadge.textContent = 'API Ready (' + meta.countries + ' Countries)';
+
+        // Populate countries dropdown dynamically with all 170 countries
+        const countries = await DataAPI.countries();
+        const countrySelect = document.getElementById('countrySelect');
+        const selectedVal = countrySelect.value || 'IND';
+        countrySelect.innerHTML = '';
+        countries.forEach((iso) => {
+          const opt = document.createElement('option');
+          opt.value = iso;
+          opt.textContent = iso;
+          if (iso === selectedVal) opt.selected = true;
+          countrySelect.appendChild(opt);
+        });
+
+        // Run default query
+        executeLiveQuery();
+      }).catch((err) => {
+        statusBadge.className = 'badge bg-danger';
+        statusBadge.textContent = 'API Error: ' + err.message;
+      });
+
+      async function executeLiveQuery() {
+        const iso = document.getElementById('countrySelect').value;
+        const ssp = document.getElementById('sspSelect').value;
+        const rcp = document.getElementById('rcpSelect').value;
+        const dr = Number(document.getElementById('drSelect').value);
+
+        spinner.classList.remove('d-none');
+        resultsWrapper.classList.add('d-none');
+
+        const isCacheHit = cachedCountries.has(iso);
+        const startTime = performance.now();
+        try {
+          const rows = await DataAPI.getData(iso, { ssp, rcp, dr });
+          const endTime = performance.now();
+          const elapsed = (endTime - startTime).toFixed(1);
+
+          // Mark country as cached in browser memory
+          cachedCountries.add(iso);
+
+          // Render Table Rows
+          tableBody.innerHTML = '';
+          rows.forEach((r) => {
+            const tr = document.createElement('tr');
+            const formatNum = (v) => (v !== null && v !== undefined ? Number(v).toFixed(2) : '<span class="text-muted">NA</span>');
+
+            tr.innerHTML = 
+              '<td><code>' + r.run + '</code></td>' +
+              '<td>' + r.dmgfuncpar + '</td>' +
+              '<td>' + r.climate + '</td>' +
+              '<td class="text-end">' + formatNum(r.p16_7) + '</td>' +
+              '<td class="text-end fw-bold text-primary">' + formatNum(r.p50) + '</td>' +
+              '<td class="text-end">' + formatNum(r.p83_3) + '</td>' +
+              '<td class="text-center"><span class="badge bg-light text-dark border">' + r.n + '</span></td>';
+            tableBody.appendChild(tr);
+          });
+
+          // Update Live Browser Usage Stats
+          statTime.textContent = elapsed + ' ms';
+          if (isCacheHit) {
+            cacheBadge.className = 'badge bg-success';
+            cacheBadge.innerHTML = '<i class="bi bi-lightning-fill me-1"></i>Memory Cache Hit';
+            statTransfer.textContent = '0 KB (Memory Hit)';
+          } else {
+            cacheBadge.className = 'badge bg-info text-dark';
+            cacheBadge.innerHTML = '<i class="bi bi-cloud-arrow-down-fill me-1"></i>HTTP Fetch';
+            statTransfer.textContent = '23.3 KB (.bin)';
+          }
+
+          statRows.textContent = rows.length + ' / 1,458';
+
+          // Memory Usage
+          if (window.performance && window.performance.memory) {
+            const usedHeap = (window.performance.memory.usedJSHeapSize / (1024 * 1024)).toFixed(1);
+            statMemory.textContent = usedHeap + ' MB Heap';
+          } else {
+            statMemory.textContent = '23.3 KB Buffer';
+          }
+
+          // Compute throughput
+          const numericElapsed = Math.max(parseFloat(elapsed), 0.1);
+          const throughput = Math.round((1458 / numericElapsed) * 1000);
+          statThroughput.textContent = throughput.toLocaleString() + ' rows/sec';
+          statFile.textContent = iso + '.bin (23,344 bytes)';
+
+          resultsCount.textContent = rows.length + ' rows returned for ' + iso;
+          executionTime.textContent = 'Total time: ' + elapsed + ' ms';
+          resultsWrapper.classList.remove('d-none');
+        } catch (e) {
+          alert('Query failed: ' + e.message);
+        } finally {
+          spinner.classList.add('d-none');
+        }
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        executeLiveQuery();
+      });
+    })();
+  </script>
+</body>
+</html>

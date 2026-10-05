@@ -1,0 +1,46 @@
+MIT License
+
+Copyright (c) 2026 CSCC Static API Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+==============================================================================
+DATASET NOTICE & TERMS
+==============================================================================
+
+The Country-Level Social Cost of Carbon (CSCC) dataset provided in this repository
+(derived from cscc_db_v2.csv) is the work of:
+
+  Katharine Ricke, Laurent Drouet, Ken Caldeira, and Massimo Tavoni
+  "Country-level social cost of carbon"
+  Nature Climate Change 8, 895–900 (2018)
+  DOI: https://doi.org/10.1038/s41558-018-0282-y
+  Original repository: https://github.com/country-level-scc/
+
+The underlying dataset was published as academic replication and supplementary
+research material without an explicit open-source license attached by the original
+authors.
+
+The MIT license above applies exclusively to the source code, parser tooling,
+build scripts, and client libraries created in this repository.
+
+The dataset itself is distributed in good faith for academic, scientific, and
+educational research under academic replication principles. If you use this data,
+you must properly cite the original publication listed above. If you intend to use
+the data for commercial purposes, please contact the original authors directly.
